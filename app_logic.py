@@ -1,3 +1,6 @@
+import Exceptions
+
+
 def calculate_iva(value: float, tax: float) -> float:
     """
     Calcula el precio final del producto aplicando el impuesto de IVA.
@@ -5,13 +8,15 @@ def calculate_iva(value: float, tax: float) -> float:
     """
     # Validación: El precio base debe ser mayor que 0
     if value < 0:
-        return "ERROR: el precio debe ser mayor que 0"
-    if value == 0:
-        return "ERROR: el precio del producto no puede ser cero"
+        raise Exceptions.NegativeValueError("ERROR: el precio del producto no puede ser negativo")
     
     # Validación: El IVA no puede superar el 19% (0.19)
     if tax > 0.19:
-        return "ERROR: el iva no puede superar el 19%"
+         raise Exception("ERROR: el impuesto de IVA no puede superar el 19%")
+    
+    if value == 0:
+        # Aquie Genrea Un Error
+        raise Exception("ERROR: el precio del producto no puede ser cero")
     
     # Cálculo: Precio final = Valor base * (1 + Porcentaje de Impuesto)
     # Se redondea a 2 decimales para evitar problemas de precisión de punto flotante
