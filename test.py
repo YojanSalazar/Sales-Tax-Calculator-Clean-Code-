@@ -3,7 +3,7 @@ import unittest
 import app_logic
 
 class TestCalculatorTax(unittest.TestCase):
-        
+    # Casos normales.
 
     def test_normal1(self):
         valor: float = 20000
@@ -27,6 +27,7 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
 
     def test_excento(self):
+        #Caso exento de impuestos, el valor calculado debe ser igual al valor ingresado.
         valor = 18000
         tax = 0
 
@@ -36,6 +37,7 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertEqual(valor_calculado, valor_esperado)
 
     def test_licores(self):
+        #Caso de calculo de licores, se espera
         valor = 112000
         tax = 19/100
         grado = 40
@@ -48,6 +50,40 @@ class TestCalculatorTax(unittest.TestCase):
         valor_esperado = 149559.2
 
         self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
+    
+    def test_impuesto_nacional_consumo(self):
+        valor = 14000
+        tax = 10/100
+
+        calular_licor = app_logic.calculte_impuesto_nacional_consumo(valor, tax)
+
+        valor_esperado = 15400
+
+        self.assertAlmostEqual(calular_licor, valor_esperado, 2)
+    
+    def test_bolsa(self):
+        # Impuesto de bolsa, se espera que el valor calculado sea igual al valor ingresado mas el impuesto.
+        valor = 1000
+        tax = 75
+        numero_bolsas = 10
+        
+
+        calular_bolsa = app_logic.Calculate_bolsa(valor, tax, numero_bolsas)
+
+        valor_esperado = 1750
+
+        self.assertAlmostEqual(calular_bolsa, valor_esperado, 2)
+    
+    def test_error_negativo(self):
+        #Caso de valor negativo, se espera que el valor calculado sea igual al valor ingresado.
+        valor = -10000
+        tax = 19/100
+
+        valor_calculado = app_logic.calculate_iva(valor, tax)
+        valor_esperado = -11900
+
+        self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
+        
     
 
 
