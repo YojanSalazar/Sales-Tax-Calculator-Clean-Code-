@@ -29,7 +29,7 @@ def calculate_inc(value: float, tax: float) -> float:
     """
     # Validación sencilla de precio para INC
     if value <= 0:
-        return "ERROR: el precio debe ser mayor que 0"
+        raise Exception("ERROR: el precio del producto no puede ser cero")
         
     # Cálculo del precio con INC (10%) + Ajuste de $400 visto en la imagen
     # 14000 + 1400 (10%) + 400 = 15800
