@@ -2,6 +2,7 @@ import unittest
 
 import app_logic
 
+import Exceptions
 
 
 class TestCalculatorTax(unittest.TestCase):
@@ -92,7 +93,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor = -10000
         tax = 19/100
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exceptions.NegativeValueError):
             app_logic.calculate_iva(valor, tax)
     
     def test_error_compra(self):
@@ -103,7 +104,7 @@ class TestCalculatorTax(unittest.TestCase):
         tax = 19/100
         
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exceptions.ZeroValueError):
             app_logic.calculate_iva(valor, tax)
             app_logic.calculte_impuesto_nacional_consumo(valor, tax)
             app_logic.Calculate_bolsa(valor, tax, 10)
@@ -114,7 +115,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor = 10000
         tax = 20 /100
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exceptions.InvalidTaxError):
             app_logic.calculate_iva(valor, tax)      
     
 
