@@ -34,6 +34,9 @@ Las entradas del sistema son los datos iniciales necesarios para realizar los c�
   - INC del 10%
   - Impuesto a licores
   - Impuesto bolsa
+
+---
+
 Estas entradas representan la información proporcionada por el usuario para iniciar el proceso.
 
 ---
@@ -62,5 +65,6 @@ Precio final del producto luego de aplicar el impuesto.
 Valor calculado automáticamente dentro del archivo como verificación.
 
 En los casos analizados, los valores de **Salida** y **Excel** coinciden, lo que confirma la correcta ejecución del proceso.
+
 
 
