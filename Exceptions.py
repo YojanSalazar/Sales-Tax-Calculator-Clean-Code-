@@ -11,7 +11,7 @@ class NegativeValueError(TaxCalculationError):
     def __init__(self, message="ERROR: el precio del producto no puede ser negativo"):
         self.message = message
         super().__init__(self.message)
-    
+        
     def __str__(self):
         return f'Error: {self.message}'
     

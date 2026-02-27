@@ -50,5 +50,5 @@ def calculate_licores(value: float, grado_alcohol: float, tarifa: float, volumen
 def calculte_impuesto_nacional_consumo(value: float, tax: float) -> float:
     return value * (1 + tax)
 
-def Calculate_bolsa(value: float, tax: float, numero_bolsas: int) -> float:
-    return value + (tax * numero_bolsas)
+def Calculate_bolsa(tax: float, numero_bolsas: int) -> float:
+    return (tax * numero_bolsas)
