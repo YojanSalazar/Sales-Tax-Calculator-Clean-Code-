@@ -32,6 +32,18 @@ class TestCalculatorTax(unittest.TestCase):
         valor_esperado = 6090
 
         self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
+    
+    def test_normal3(self):
+        # ENTRADAS
+
+        valor: float = 4000
+        tax = 19 / 100
+
+        valor_calculado = app_logic.calculate_iva(valor, tax)
+
+        valor_esperado = 4760
+
+        self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
 
     def test_excento(self):
         #Caso exento de impuestos, el valor calculado debe ser igual al valor ingresado.
@@ -118,6 +130,15 @@ class TestCalculatorTax(unittest.TestCase):
             app_logic.calculate_iva(valor, tax)      
     
 
+    def test_errror_IVA_negativo(self):
+    # Caso de IVA negativo, se espera que el valor calculado sea igual al mensaje de error.
+        # ENTRADAS
+        valor = 10000
+        tax = -10 /100
+
+        with self.assertRaises(Exceptions.NegativeIVAError):
+            app_logic.calculate_iva(valor, tax)
+    
 
 if __name__ == "__main__":
     unittest.main()

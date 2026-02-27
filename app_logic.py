@@ -15,9 +15,14 @@ def calculate_iva(value: float, tax: float) -> float:
          raise Exceptions.InvalidTaxError()
     
     if value == 0:
-        # Aquie Genrea Un Error
+        # Aquie Genera Un Error
         raise Exceptions.ZeroValueError()
     
+    if tax < 0:
+        raise Exceptions.NegativeIVAError()
+        #Aqui Genera Un Error
+
+        
     # Cálculo: Precio final = Valor base * (1 + Porcentaje de Impuesto)
     # Se redondea a 2 decimales para evitar problemas de precisión de punto flotante
     return round(value * (1 + tax), 2)

@@ -44,3 +44,12 @@ class InvalidOptionError(TaxCalculationError):
 
     def __str__(self):
         return f'Error: {self.message}'
+
+class NegativeIVAError(TaxCalculationError):
+    """Excepción para tasas de IVA negativas."""
+    def __init__(self, message="ERROR: el impuesto de IVA no puede ser negativo"):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'Error: {self.message}'
