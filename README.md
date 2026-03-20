@@ -35,7 +35,14 @@ Desarrollar una herramienta clara y estructurada que permita comprender el proce
 # Ejecución
 
 ## Prerrequisitos
-Antes de utilizar el proyecto se debe contar con:
+Antes de ejecutar y utilizar el proyecto se debe contar con:
+
+- **Python 3.8 o superior**. Puede verificar su versión con:
+
+```bash
+python --version
+```
+
 
 - **Microsoft Excel** o cualquier software compatible con archivos `.xlsx`
 - Descargar o clonar este repositorio en el computador
@@ -45,9 +52,14 @@ Antes de utilizar el proyecto se debe contar con:
 ## Ejecución del proyecto
 
 1. Ubicarse en la carpeta raíz del proyecto.
-2. Abrir el archivo de **Excel** incluido en el repositorio.
-3. Ingresar los datos solicitados en las columnas correspondientes.
-4. El sistema calculará automáticamente los impuestos y el precio final del producto.
+2. Ejecutar el siguiente comando
+
+```bash
+py src/view/logica_consola.py
+```
+3. Abrir el archivo de **Excel** incluido en el repositorio.
+4. Ingresar los datos solicitados en las columnas correspondientes.
+5. El sistema calculará automáticamente los impuestos y el precio final del producto.
 
 ---
 
@@ -55,13 +67,13 @@ Antes de utilizar el proyecto se debe contar con:
 
 El proyecto se organiza en las siguientes carpetas:
 
-**carpeta docs**  
+**carpeta documentos**  
 Contiene documentación adicional relacionada con el proyecto.
 
 **carpeta src**  
-Contiene el código fuente o archivos principales del sistema.
+Contiene el código fuente o archivos principales del sistema(model y view).
 
-**carpeta tests**  
+**carpeta Tests**  
 Incluye los casos de prueba utilizados para validar los cálculos del sistema.
 
 Cada carpeta puede incluir un archivo `__init__.py` para permitir que Python reconozca el directorio como módulo en caso de implementaciones futuras.
@@ -74,9 +86,7 @@ Cada carpeta puede incluir un archivo `__init__.py` para permitir que Python rec
 
 | Campo | Descripción |
 |------|-------------|
-| Producto | Nombre del producto |
-| Valor | Precio base del producto |
-| Tipo de impuesto | Tipo de impuesto aplicado |
+| Valor del producto | Precio base del producto |
 | Porcentaje de impuesto | Porcentaje correspondiente al impuesto |
 
 Ejemplos de impuestos:
