@@ -10,7 +10,9 @@ class TestCalculatorTax(unittest.TestCase):
     # Casos normales.
 
     def test_normal1(self):
-        # ENTRADAS
+    # ENTRADAS
+    # Verifica que el cálculo del IVA del 19% funcione
+    # correctamente para un producto con precio base.   
 
         valor: float = 20000
         impuesto = 19 / 100
@@ -23,7 +25,9 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
     
     def test_normal2(self):
-        # ENTRADAS
+    # ENTRADAS
+    # Verifica el cálculo del IVA del 5% aplicado a un
+    # producto con un precio base específico.
 
         valor: float = 5800
         impuesto = 5/100
@@ -35,8 +39,9 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
     
     def test_normal3(self):
-        # ENTRADAS
-
+    # ENTRADAS
+    # Verifica que el cálculo del IVA del 19% funcione
+    # correctamente para un producto con precio base.
         valor: float = 4000
         impuesto = 19 / 100
 
@@ -47,8 +52,10 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
 
     def test_excento(self):
-        #Caso exento de impuestos, el valor calculado debe ser igual al valor ingresado.
-        # ENTRADAS
+    #Caso exento de impuestos, el valor calculado debe ser igual al valor ingresado.
+    # ENTRADAS
+    # Verifica que cuando un producto está exento de IVA
+    # el valor final sea igual al valor base.
   
         valor = 18000
         impuesto = 0
@@ -59,8 +66,11 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertEqual(valor_calculado, valor_esperado)
 
     def test_licores(self):
-        #Caso de calculo de licores, se espera
-        # ENTRADAS
+    #Caso de calculo de licores, se espera
+    # ENTRADAS
+    # Verifica el cálculo del impuesto aplicado a licores.
+    # Primero se calcula la base gravable del licor y luego
+    # se aplica el IVA correspondiente.
 
         valor = 112000
         impuesto = 19/100
@@ -76,7 +86,10 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
     
     def test_impuesto_nacional_consumo(self):
-        # ENTRADAS
+    # ENTRADAS
+    # Verifica el cálculo del Impuesto Nacional al Consumo
+    # aplicado a un producto específico.
+
         valor = 14000
         impuesto = 10/100
 
@@ -87,9 +100,12 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertAlmostEqual(calcular_licor, valor_esperado, 2)
     
     def test_bolsa(self):
-        # Impuesto de bolsa, se espera que el valor calculado sea igual al valor ingresado mas el impuesto.
-         # ENTRADAS
-    
+    # Impuesto de bolsa, se espera que el valor calculado sea igual al valor ingresado mas el impuesto.
+    # ENTRADAS
+    # Verifica el cálculo del impuesto por bolsas plásticas
+    # multiplicando el valor del impuesto por el número
+    # de bolsas utilizadas.
+
         impuesto = 75
         numero_bolsas = 10
         
@@ -100,8 +116,11 @@ class TestCalculatorTax(unittest.TestCase):
         self.assertAlmostEqual(calcular_bolsa, valor_esperado, 2)
     
     def test_error_negativo(self):
-        #Caso de valor negativo, se espera que el valor calculado sea igual al valor ingresado.
-        # ENTRADAS
+    #Caso de valor negativo, se espera que el valor calculado sea igual al valor ingresado.
+    # ENTRADAS
+    # Verifica que el sistema lance una excepción cuando
+    # se intenta calcular un impuesto con un valor negativo
+    # para el precio del producto.
 
         valor = -10000
         impuesto = 19/100
@@ -111,8 +130,10 @@ class TestCalculatorTax(unittest.TestCase):
     
     def test_error_compra(self):
     #Caso de valor igual a 0, se espera que el valor calculado sea igual al mensaje de error.
-        # ENTRADAS
-        
+    # ENTRADAS
+    # Verifica que el sistema lance una excepción cuando
+    # el valor del producto es igual a cero.
+
         valor = 0
         impuesto = 19/100
         
@@ -123,7 +144,10 @@ class TestCalculatorTax(unittest.TestCase):
 
     def test_error_IVA(self):
     # Caso de IVA mayor al permitido, se espera que el valor calculado sea igual al mensaje de error.
-        # ENTRADAS
+    # ENTRADAS
+    # Verifica que el sistema lance una excepción cuando
+    # el porcentaje de IVA supera el valor permitido.
+        
         valor = 10000
         impuesto = 20 /100
 
@@ -133,7 +157,10 @@ class TestCalculatorTax(unittest.TestCase):
 
     def test_errror_IVA_negativo(self):
     # Caso de IVA negativo, se espera que el valor calculado sea igual al mensaje de error.
-        # ENTRADAS
+    # ENTRADAS
+    # Verifica que el sistema lance una excepción cuando
+    # el porcentaje de IVA ingresado es negativo.
+
         valor = 10000
         impuesto = -10 /100
 
