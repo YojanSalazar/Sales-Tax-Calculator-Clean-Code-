@@ -89,10 +89,10 @@ def main() -> None:
         if opcion in PRODUCTOS:
             try:
                 procesar_compra(opcion)
-            except Exceptions.TaxCalculationError as e:
+            except Exceptions.ErrorCalculoImpuesto as e:
                 print(f"\nError en el cálculo: {e}\n")
         else:
-            print("\nOpción no válida. Por favor, seleccione una opción del menú.\n")
+            print(Exceptions.ErrorOpcionInvalida())
 
 
 if __name__ == "__main__":

@@ -125,7 +125,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor = -10000
         impuesto = 19/100
 
-        with self.assertRaises(Exceptions.NegativeValueError):
+        with self.assertRaises(Exceptions.ErrorValorNegativoOCero):
             app_logic.calcular_iva(valor, impuesto)
     
     def test_error_compra(self):
@@ -137,12 +137,18 @@ class TestCalculatorTax(unittest.TestCase):
         valor = 0
         impuesto = 19/100
         
-        with self.assertRaises(Exceptions.ZeroValueError):
+        with self.assertRaises(Exceptions.ErrorValorNegativoOCero):
             app_logic.calcular_iva(valor, impuesto)
-        with self.assertRaises(Exceptions.ZeroValueError):
-            app_logic.calculte_impuesto_nacional_consumo(valor, impuesto)
-        with self.assertRaises(Exceptions.ZeroValueError):
-            app_logic.calcular_bolsa(impuesto, 10)
+        with self.assertRaises(Exceptions.ErrorValorNegativoOCero):
+            app_logic.calculte_impuesto_nacional_consumo(valor, impuesto=0)
+        
+    
+    def test_error_bolsa(self):
+        """si la cantidad de bolsas es negativa, se espera que el valor calculado sea igual al mensaje de error."""
+        impuesto = 75
+        cantidad_bolsas = -5
+        with self.assertRaises(Exceptions.ErrorParametrosBolsas):
+            app_logic.calcular_bolsa(impuesto=impuesto, numero_bolsas=cantidad_bolsas)
 
     def test_error_IVA(self):
     # Caso de IVA mayor al permitido, se espera que el valor calculado sea igual al mensaje de error.
@@ -153,7 +159,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor = 10000
         impuesto = 20 /100
 
-        with self.assertRaises(Exceptions.InvalidTaxError):
+        with self.assertRaises(Exceptions.ErrorImpuestoInvalido):
             app_logic.calcular_iva(valor, impuesto)      
     
 
@@ -166,7 +172,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor = 10000
         impuesto = -10 /100
 
-        with self.assertRaises(Exceptions.NegativeIVAError):
+        with self.assertRaises(Exceptions.ErrorIVANegativo):
             app_logic.calcular_iva(valor, impuesto)
     
 
