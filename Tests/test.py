@@ -139,7 +139,9 @@ class TestCalculatorTax(unittest.TestCase):
         
         with self.assertRaises(Exceptions.ZeroValueError):
             app_logic.calcular_iva(valor, impuesto)
+        with self.assertRaises(Exceptions.ZeroValueError):
             app_logic.calculte_impuesto_nacional_consumo(valor, impuesto)
+        with self.assertRaises(Exceptions.ZeroValueError):
             app_logic.calcular_bolsa(impuesto, 10)
 
     def test_error_IVA(self):
