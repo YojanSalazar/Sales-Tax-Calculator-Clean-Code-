@@ -18,7 +18,7 @@ class TestCalculatorTax(unittest.TestCase):
         impuesto = 19 / 100
 
 
-        valor_calculado = app_logic.calculate_iva(valor, impuesto)
+        valor_calculado = app_logic.calcular_iva(valor, impuesto)
 
         valor_esperado = 23800
 
@@ -32,7 +32,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor: float = 5800
         impuesto = 5/100
 
-        valor_calculado = app_logic.calculate_iva(valor, impuesto)
+        valor_calculado = app_logic.calcular_iva(valor, impuesto)
 
         valor_esperado = 6090
 
@@ -45,7 +45,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor: float = 4000
         impuesto = 19 / 100
 
-        valor_calculado = app_logic.calculate_iva(valor, impuesto)
+        valor_calculado = app_logic.calcular_iva(valor, impuesto)
 
         valor_esperado = 4760
 
@@ -60,7 +60,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor = 18000
         impuesto = 0
 
-        valor_calculado = app_logic.calculate_iva(valor, impuesto)
+        valor_calculado = app_logic.calcular_iva(valor, impuesto)
         valor_esperado = 18000
 
         self.assertEqual(valor_calculado, valor_esperado)
@@ -78,9 +78,9 @@ class TestCalculatorTax(unittest.TestCase):
         volumen = 750
         tarifa = 342
 
-        calcular_licor = app_logic.calculate_licores(valor, grado, tarifa, volumen)
+        calcular_licor = app_logic.calcular_licores(valor, grado, tarifa, volumen)
 
-        valor_calculado = app_logic.calculate_iva(calcular_licor, impuesto)
+        valor_calculado = app_logic.calcular_iva(calcular_licor, impuesto)
         valor_esperado = 149559.2
 
         self.assertAlmostEqual(valor_calculado, valor_esperado, 2)
@@ -109,7 +109,7 @@ class TestCalculatorTax(unittest.TestCase):
         impuesto = 75
         numero_bolsas = 10
         
-        calcular_bolsa = app_logic.Calculate_bolsa(impuesto, numero_bolsas)
+        calcular_bolsa = app_logic.calcular_bolsa(impuesto, numero_bolsas)
 
         valor_esperado = 750
 
@@ -126,7 +126,7 @@ class TestCalculatorTax(unittest.TestCase):
         impuesto = 19/100
 
         with self.assertRaises(Exceptions.NegativeValueError):
-            app_logic.calculate_iva(valor, impuesto)
+            app_logic.calcular_iva(valor, impuesto)
     
     def test_error_compra(self):
     #Caso de valor igual a 0, se espera que el valor calculado sea igual al mensaje de error.
@@ -138,9 +138,9 @@ class TestCalculatorTax(unittest.TestCase):
         impuesto = 19/100
         
         with self.assertRaises(Exceptions.ZeroValueError):
-            app_logic.calculate_iva(valor, impuesto)
+            app_logic.calcular_iva(valor, impuesto)
             app_logic.calculte_impuesto_nacional_consumo(valor, impuesto)
-            app_logic.Calculate_bolsa(impuesto, 10)
+            app_logic.calcular_bolsa(impuesto, 10)
 
     def test_error_IVA(self):
     # Caso de IVA mayor al permitido, se espera que el valor calculado sea igual al mensaje de error.
@@ -152,7 +152,7 @@ class TestCalculatorTax(unittest.TestCase):
         impuesto = 20 /100
 
         with self.assertRaises(Exceptions.InvalidTaxError):
-            app_logic.calculate_iva(valor, impuesto)      
+            app_logic.calcular_iva(valor, impuesto)      
     
 
     def test_errror_IVA_negativo(self):
@@ -165,7 +165,7 @@ class TestCalculatorTax(unittest.TestCase):
         impuesto = -10 /100
 
         with self.assertRaises(Exceptions.NegativeIVAError):
-            app_logic.calculate_iva(valor, impuesto)
+            app_logic.calcular_iva(valor, impuesto)
     
 
 if __name__ == "__main__":

@@ -1,8 +1,5 @@
 class TaxCalculationError(Exception):
     """Excepción personalizada para errores en el cálculo de impuestos."""
-    pass
-
-
     def __str__(self):
         return f'Error: {self.message}'
     
@@ -53,3 +50,13 @@ class NegativeIVAError(TaxCalculationError):
 
     def __str__(self):
         return f'Error: {self.message}'
+
+class InvalidLicoresParametersError(TaxCalculationError):
+    def __init__(self, message="ERROR: parámetros de licores inválidos"):
+        self.message = message
+        super().__init__(self.message)
+
+class InvalidBolsasParametersError(TaxCalculationError):
+    def __init__(self, message="ERROR: el número de bolsas debe ser positivo"):
+        self.message = message
+        super().__init__(self.message)
