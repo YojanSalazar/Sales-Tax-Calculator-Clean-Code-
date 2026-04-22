@@ -5,7 +5,7 @@ Luis Alejandro Correa
 Yojan Esteban Salazar  
 
 ## Fork realizado por
-Jhairo Esteban Muñetón  
+Jhairo Esteban Muñetón Cortés
 Nelson David Jiménez Ruiz  
 
 ---
