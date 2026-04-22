@@ -29,7 +29,7 @@ PRODUCTOS = {
 }
  
  
-class ImpuestosApp(App):
+class SalesTaxApp(App):
     def build(self):
         # Contenedor principal: dos columnas, igual que el profesor
         contenedor = GridLayout(cols=2, padding=20, spacing=10)
@@ -123,4 +123,4 @@ class ImpuestosApp(App):
  
  
 if __name__ == "__main__":
-    ImpuestosApp().run()
+    SalesTaxApp().run()

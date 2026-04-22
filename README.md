@@ -1,8 +1,12 @@
 # Calculadora de Impuestos de Venta
 
-## Creadores
+## Creadores originales
 Luis Alejandro Correa  
 Yojan Esteban Salazar  
+
+## Fork realizado por
+Jhairo Esteban Muñetón  
+Nelson David Jiménez Ruiz  
 
 ---
 
@@ -29,6 +33,7 @@ Desarrollar una herramienta clara y estructurada que permita comprender el proce
 - Comparación entre resultados esperados y resultados calculados
 - Validación de datos de entrada
 - Visualización clara del flujo **entrada → proceso → salida**
+- Interfaz gráfica desarrollada con **Kivy**
 
 ---
 
@@ -43,23 +48,43 @@ Antes de ejecutar y utilizar el proyecto se debe contar con:
 python --version
 ```
 
-
 - **Microsoft Excel** o cualquier software compatible con archivos `.xlsx`
 - Descargar o clonar este repositorio en el computador
+- Instalar las dependencias necesarias:
+
+```bash
+pip install kivy
+```
 
 ---
 
 ## Ejecución del proyecto
 
+### Opción 1 — Interfaz gráfica (GUI)
+
 1. Ubicarse en la carpeta raíz del proyecto.
-2. Ejecutar el siguiente comando
+2. Ejecutar el siguiente comando:
+
+```bash
+python sales_tax.py
+```
+
+Esto abrirá la interfaz gráfica desarrollada con Kivy, donde podrá seleccionar el producto, ingresar el precio y el número de bolsas para calcular el total con impuestos.
+
+### Opción 2 — Consola
+
+1. Ubicarse en la carpeta raíz del proyecto.
+2. Ejecutar el siguiente comando:
 
 ```bash
 py src/view/logica_consola.py
 ```
-3. Abrir el archivo de **Excel** incluido en el repositorio.
-4. Ingresar los datos solicitados en las columnas correspondientes.
-5. El sistema calculará automáticamente los impuestos y el precio final del producto.
+
+### Opción 3 — Excel
+
+1. Abrir el archivo de **Excel** incluido en el repositorio.
+2. Ingresar los datos solicitados en las columnas correspondientes.
+3. El sistema calculará automáticamente los impuestos y el precio final del producto.
 
 ---
 
@@ -71,7 +96,7 @@ El proyecto se organiza en las siguientes carpetas:
 Contiene documentación adicional relacionada con el proyecto.
 
 **carpeta src**  
-Contiene el código fuente o archivos principales del sistema(model y view).
+Contiene el código fuente o archivos principales del sistema (model y view).
 
 **carpeta Tests**  
 Incluye los casos de prueba utilizados para validar los cálculos del sistema.
@@ -88,6 +113,7 @@ Cada carpeta puede incluir un archivo `__init__.py` para permitir que Python rec
 |------|-------------|
 | Valor del producto | Precio base del producto |
 | Porcentaje de impuesto | Porcentaje correspondiente al impuesto |
+| Número de bolsas | Cantidad de bolsas plásticas utilizadas |
 
 Ejemplos de impuestos:
 
