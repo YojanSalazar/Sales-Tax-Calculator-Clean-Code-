@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sales Tax Calculator</string>
+    <string name="private_version">fc63dd54bfdcc28ca843ab717240eaaa29d6e47a</string>
+    <string name="presplash_color">#000000</string>
+    <string name="urlScheme">kivy</string>
+</resources>
