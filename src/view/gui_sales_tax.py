@@ -1,4 +1,4 @@
-"""Interfaz gráfica mejorada con Kivy para la calculadora de impuestos."""
+"""Interfaz gráfica con Kivy para la calculadora de impuestos."""
 
 import sys
 sys.path.append("src")
@@ -11,32 +11,32 @@ from kivy.uix.spinner import Spinner
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
-from kivy.graphics import Color, Rectangle
-from kivy.core.window import Window
+from kivy.uix.anchorlayout import AnchorLayout
+from kivy.graphics import Color, Rectangle, RoundedRectangle
 
 import model.app_logic as app_logic
 from model import Exceptions
 
-# Tamaño de ventana
-Window.size = (500, 500)
 
 # ── Constantes ─────────────────────────────────────────
-TARIFA_BOLSA   = 75
+TARIFA_BOLSA = 75
 TARIFA_LICORES = 342
 
 PRODUCTOS = {
-    "Shampoo":            {"iva": 0.19},
-    "Dolex":              {"iva": 0.05},
+    "Shampoo": {"iva": 0.19},
+    "Dolex": {"iva": 0.05},
     "Barra de Chocolate": {"iva": 0.05},
-    "Canasta de Huevos":  {"iva": 0.00},
-    "Whisky":             {"iva": 0.19, "licor": {"grado": 40, "volumen": 750}},
-    "Cigarrillos":        {"inc": 0.10},
-    "Cerveza":            {"iva": 0.19, "licor": {"grado": 10, "volumen": 650}},
+    "Canasta de Huevos": {"iva": 0.00},
+    "Whisky": {"iva": 0.19, "licor": {"grado": 40, "volumen": 750}},
+    "Cigarrillos": {"inc": 0.10},
+    "Cerveza": {"iva": 0.19, "licor": {"grado": 10, "volumen": 650}},
 }
 
 
-class Fondo(BoxLayout):
-    """Fondo con color suave"""
+# ── UI Components ──────────────────────────────────────
+class Background(BoxLayout):
+    """Fondo con color suave."""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         with self.canvas.before:
@@ -45,164 +45,199 @@ class Fondo(BoxLayout):
 
         self.bind(size=self._update_rect, pos=self._update_rect)
 
-    def _update_rect(self, *args):
+    def _update_rect(self, *_):
         self.rect.size = self.size
         self.rect.pos = self.pos
 
 
+# ── App Principal ──────────────────────────────────────
 class SalesTaxApp(App):
+
     def build(self):
+        root = Background()
 
-        root = Fondo(orientation="vertical")
+        container = AnchorLayout()
 
-        # Contenedor centrado
-        wrapper = BoxLayout(
+        # Tarjeta principal
+        form = BoxLayout(
             orientation="vertical",
-            padding=[40, 80],
+            size_hint=(0.85, 0.65),
+            padding=20,
+            spacing=15
         )
 
-        # Grid principal (YA CORREGIDO)
-        contenedor = GridLayout(
-            cols=2,
-            spacing=15,
-            size_hint=(1, 1)
-        )
+        with form.canvas.before:
+            Color(1, 1, 1, 1)
+            self.form_bg = RoundedRectangle(
+                size=form.size,
+                pos=form.pos,
+                radius=[12]
+            )
+
+        form.bind(size=self._update_form_bg, pos=self._update_form_bg)
 
         # ── Título ─────────────────────────────
-        titulo = Label(
+        form.add_widget(Label(
             text="Calculadora de Impuestos",
-            font_size=26,
+            font_size=22,
             bold=True,
-            size_hint=(1, 0.2),
+            size_hint=(1, 0.15),
             color=(0.1, 0.1, 0.1, 1)
+        ))
+
+        # ── Grid ──────────────────────────────
+        grid = GridLayout(
+            cols=2,
+            spacing=10,
+            size_hint=(1, None),
+            height=150 
         )
 
-        wrapper.add_widget(titulo)
-
-        # ── Estilos ───────────────────────────
-        def label_estilo(texto):
-            return Label(
-                text=texto,
-                font_size=16,
-                color=(0.2, 0.2, 0.2, 1)
-            )
-
-        def input_estilo():
-            return TextInput(
-                font_size=18,
-                multiline=False,
-                padding=10,
-                background_normal="",
-                background_color=(1, 1, 1, 1),
-                foreground_color=(0, 0, 0, 1)
-            )
-
-        # ── Campos ────────────────────────────
-        contenedor.add_widget(label_estilo("Producto"))
+        grid.add_widget(self._label("Producto"))
         self.spinner = Spinner(
             text="Seleccione",
             values=list(PRODUCTOS.keys()),
             font_size=16,
             background_normal="",
-            background_color=(0.8, 0.85, 0.95, 1),
+            background_color=(0.9, 0.92, 0.97, 1),
             color=(0, 0, 0, 1)
         )
-        contenedor.add_widget(self.spinner)
+        grid.add_widget(self.spinner)
 
-        contenedor.add_widget(label_estilo("Precio"))
-        self.precio = input_estilo()
-        contenedor.add_widget(self.precio)
+        grid.add_widget(self._label("Precio"))
+        self.precio_input = self._input()
+        grid.add_widget(self.precio_input)
 
-        contenedor.add_widget(label_estilo("Bolsas"))
-        self.bolsas = input_estilo()
-        contenedor.add_widget(self.bolsas)
+        grid.add_widget(self._label("Bolsas"))
+        self.bolsas_input = self._input()
+        grid.add_widget(self.bolsas_input)
 
-        # Resultado
-        self.resultado = Label(
+        form.add_widget(grid)
+
+        # ── Resultado ─────────────────────────
+        self.result_label = Label(
             text="",
             font_size=20,
             bold=True,
+            size_hint=(1, None),
+            height=40,
             color=(0.1, 0.4, 0.1, 1)
         )
-        contenedor.add_widget(self.resultado)
+        form.add_widget(self.result_label)
 
-        # Botón
-        calcular = Button(
+        # ── Botón ────────────────────────────
+        calculate_button = Button(
             text="Calcular",
-            font_size=20,
+            font_size=16,
             size_hint=(1, None),
-            height=50,
+            height=45,
             background_normal="",
             background_color=(0.2, 0.5, 0.9, 1),
             color=(1, 1, 1, 1)
         )
-        contenedor.add_widget(calcular)
+        calculate_button.bind(on_press=self.calculate_total)
 
-        calcular.bind(on_press=self.calcular)
+        form.add_widget(calculate_button)
 
-        wrapper.add_widget(contenedor)
-        root.add_widget(wrapper)
+        container.add_widget(form)
+        root.add_widget(container)
 
         return root
 
-    def calcular(self, valor):
+    # ── UI Helpers ───────────────────────────
+    def _label(self, text):
+        return Label(
+            text=text,
+            font_size=16,
+            color=(0.2, 0.2, 0.2, 1)
+        )
+
+    def _input(self):
+        return TextInput(
+            multiline=False,
+            font_size=16,
+            padding=[10, 10],
+            background_normal="",
+            background_active="",
+            background_color=(0.96, 0.96, 0.96, 1),
+            foreground_color=(0, 0, 0, 1)
+        )
+
+    def _update_form_bg(self, instance, _):
+        self.form_bg.size = instance.size
+        self.form_bg.pos = instance.pos
+
+    # ── Lógica UI ────────────────────────────
+    def calculate_total(self, *_):
         try:
-            self.validar()
+            self._validate_inputs()
 
-            precio   = float(self.precio.text)
-            bolsas   = int(self.bolsas.text)
-            nombre   = self.spinner.text
-            producto = PRODUCTOS[nombre]
+            price = float(self.precio_input.text)
+            bags = int(self.bolsas_input.text)
+            product_name = self.spinner.text
+            product = PRODUCTOS[product_name]
 
-            precio_producto = self.aplicar_impuesto(precio, producto)
-            precio_bolsas   = app_logic.Calculate_bolsa(TARIFA_BOLSA, bolsas)
+            product_price = self._apply_tax(price, product)
+            bag_price = app_logic.Calculate_bolsa(TARIFA_BOLSA, bags)
 
-            total = precio_producto + precio_bolsas
-            self.resultado.text = f"Total: ${total:,.2f}"
+            total = product_price + bag_price
+            self.result_label.text = f"Total: ${total:,.2f}"
 
-        except Exceptions.TaxCalculationError as e:
-            self.mostrar_error(str(e))
+        except Exceptions.TaxCalculationError as error:
+            self._show_error(str(error))
         except ValueError:
-            self.resultado.text = "Ingrese un número válido"
-        except Exception as e:
-            self.mostrar_error(str(e))
+            self.result_label.text = "Ingrese valores numéricos válidos"
+        except Exception as error:
+            self._show_error(str(error))
 
-    def aplicar_impuesto(self, valor, producto):
-        if "licor" in producto:
-            grado   = producto["licor"]["grado"]
-            volumen = producto["licor"]["volumen"]
-            valor   = app_logic.calculate_licores(valor, grado, TARIFA_LICORES, volumen)
+    def _apply_tax(self, value, product):
+        if "licor" in product:
+            licor = product["licor"]
+            value = app_logic.calculate_licores(
+                value,
+                licor["grado"],
+                TARIFA_LICORES,
+                licor["volumen"]
+            )
 
-        if "inc" in producto:
-            return app_logic.calculte_impuesto_nacional_consumo(valor, producto["inc"])
+        if "inc" in product:
+            return app_logic.calculte_impuesto_nacional_consumo(
+                value, product["inc"]
+            )
 
-        return app_logic.calculate_iva(valor, producto.get("iva", 0))
+        return app_logic.calculate_iva(value, product.get("iva", 0))
 
-    def validar(self):
+    def _validate_inputs(self):
         if self.spinner.text not in PRODUCTOS:
             raise Exception("Seleccione un producto")
 
-        if not self.precio.text:
+        if not self.precio_input.text:
             raise Exception("Ingrese el precio")
 
-        if not self.bolsas.text:
+        if not self.bolsas_input.text:
             raise Exception("Ingrese las bolsas")
 
-    def mostrar_error(self, mensaje):
-        contenido = BoxLayout(orientation="vertical", padding=10, spacing=10)
-        contenido.add_widget(Label(text=mensaje))
+    def _show_error(self, message):
+        content = BoxLayout(orientation="vertical", padding=10, spacing=10)
+        content.add_widget(Label(text=message))
 
-        cerrar = Button(
+        close_button = Button(
             text="Cerrar",
             size_hint=(1, 0.4),
             background_normal="",
             background_color=(0.8, 0.2, 0.2, 1),
             color=(1, 1, 1, 1)
         )
-        contenido.add_widget(cerrar)
 
-        popup = Popup(title="Error", content=contenido, size_hint=(0.7, 0.3))
-        cerrar.bind(on_press=popup.dismiss)
+        content.add_widget(close_button)
+
+        popup = Popup(
+            title="Error",
+            content=content,
+            size_hint=(0.7, 0.3)
+        )
+
+        close_button.bind(on_press=popup.dismiss)
         popup.open()
 
 
