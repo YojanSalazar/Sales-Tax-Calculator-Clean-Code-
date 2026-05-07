@@ -1,144 +1,99 @@
+"""Módulo de interfaz de consola para la calculadora de impuestos de venta."""
 
 import sys
-
 sys.path.append("src")
 
 import model.app_logic as app_logic
-
 from model import Exceptions
 
-"""Este programa le permite calcular el precio final de un producto aplicando el impuesto de IVA, el Impuesto Nacional al Consumo (INC) y el impuesto de bolsa según corresponda."""
+
+TARIFA_BOLSA = 75
+TARIFA_LICORES = 342
+
+PRODUCTOS = {
+    "1": {"nombre": "Shampoo",             "iva": 0.19},
+    "2": {"nombre": "Dolex",               "iva": 0.05},
+    "3": {"nombre": "Barra de Chocolate",  "iva": 0.05},
+    "4": {"nombre": "Canasta de Huevos",   "iva": 0.00},
+    "5": {"nombre": "Whisky",              "iva": 0.19, "licor": {"grado": 40, "volumen": 750}},
+    "6": {"nombre": "Cigarrillos",         "inc": 0.10},
+    "7": {"nombre": "Cerveza",             "iva": 0.19, "licor": {"grado": 10, "volumen": 650}},
+}
 
 
-
-try: 
-    print("Este programa le permite calcular el precio final de un producto aplicando el impuesto de IVA, el Impuesto Nacional al Consumo (INC) y el impuesto de bolsa según corresponda.")
-    
+def leer_float(mensaje: str) -> float:
+    """Lee un número decimal desde consola, reintentando si el valor no es válido."""
     while True:
-        opcion = input("MENU  \n\n"
-        "Este es el listados de productos disponibles: \n\n"
-        "1. Shampoo \n"
-        "2. Dolex \n"
-        "3. Barra de Chocolate \n"
-        "4. Canasta de Huevos \n"
-        "5. Whisky \n"
-        "6. Cigarrillos \n"
-        "7. Cerveza \n"
-        "8. Barra de Chocolate \n"
-        "0. Salir \n\n")
+        try:
+            return float(input(mensaje))
+        except ValueError:
+            print("Valor inválido, ingrese un número.")
 
-        if opcion == "1":
-            while True:
-                try:
-                    valor = float(input("Ingrese el precio del shampoo: "))
-                    break
-                except ValueError:
-                    print("Eso no es un número, intenta otra vez")
-            impuesto = 19 / 100
-            impuestos = 75
-            numero_bolsas = int(input("Ingrese el número de bolsas: "))
-            print (app_logic.Calculate_bolsa(impuestos, numero_bolsas) + app_logic.calculate_iva(valor, impuesto))
 
-        elif opcion == "2":
-            while True:
-                try:
-                    valor = float(input("Ingrese el precio del Dolex: "))
-                    break
-                except ValueError:
-                    print("Eso no es un número, intenta otra vez")
-            impuesto = 5/ 100
-            impuestos = 75
-            numero_bolsas = int(input("Ingrese el número de bolsas: "))
-            print (app_logic.Calculate_bolsa(impuestos, numero_bolsas) + app_logic.calculate_iva(valor, impuesto))
+def leer_int(mensaje: str) -> int:
+    """Lee un número entero desde consola, reintentando si el valor no es válido."""
+    while True:
+        try:
+            return int(input(mensaje))
+        except ValueError:
+            print("Valor inválido, ingrese un número entero.")
 
-        elif opcion == "3":
-            while True:
-                try:
-                    valor = float(input("Ingrese el precio de la barra de chocolate: "))
-                    break
-                except ValueError:
-                    print("Eso no es un número, intenta otra vez")
-            impuesto = 5 / 100
-            impuestos = 75
-            numero_bolsas = int(input("Ingrese el número de bolsas: "))
-            print (app_logic.Calculate_bolsa(impuestos, numero_bolsas) + app_logic.calculate_iva(valor, impuesto))
 
-        elif opcion == "4":
-            while True:
-                try:
-                    valor = float(input("Ingrese el precio de la canasta de huevos: "))
-                    break
-                except ValueError:
-                    print("Eso no es un número, intenta otra vez")
-            impuesto = 0
-            impuestos = 75
-            numero_bolsas = int(input("Ingrese el número de bolsas: "))
-            print (app_logic.Calculate_bolsa(impuestos, numero_bolsas) + app_logic.calculate_iva(valor, impuesto))
+def calcular_precio_con_impuesto(valor: float, producto: dict) -> float:
+    """Aplica el impuesto correspondiente al producto (IVA, INC o licores)."""
+    if "licor" in producto:
+        grado = producto["licor"]["grado"]
+        volumen = producto["licor"]["volumen"]
+        valor = app_logic.calculate_licores(valor, grado, TARIFA_LICORES, volumen)
 
-        elif opcion == "5":
-            while True:
-                try:
-                    valor = float(input("Ingrese el precio del whisky: "))
-                    break
-                except ValueError:
-                    print("Eso no es un número, intenta otra vez")
-            impuesto = 19 / 100
-            grado = 40
-            volumen = 750
-            tarifa = 342
-            impuestos = 75
-            calular_licor = app_logic.calculate_licores(valor, grado, tarifa, volumen)
-            numero_bolsas = int(input("Ingrese el número de bolsas: "))
-            print (app_logic.Calculate_bolsa(impuestos, numero_bolsas) + app_logic.calculate_iva(calular_licor, impuesto))           
-            
+    if "inc" in producto:
+        return app_logic.calculte_impuesto_nacional_consumo(valor, producto["inc"])
 
-        elif opcion == "6":
-            while True:
-                try:
-                    valor = float(input("Ingrese el precio de los cigarrillos: "))
-                    break
-                except ValueError:
-                    print("Eso no es un número, intenta otra vez")
-            impuesto = 0.1
-            impuestos = 75        
-            numero_bolsas = int(input("Ingrese el número de bolsas: "))
-            print (app_logic.Calculate_bolsa(impuestos, numero_bolsas) + app_logic.calculate_impuesto_nacional_consumo(valor, impuesto))
+    return app_logic.calculate_iva(valor, producto.get("iva", 0))
 
-        elif opcion == "7":
-            while True:
-                try:
-                    valor = float(input("Ingrese el precio de la cerveza: "))
-                    break
-                except ValueError:
-                    print("Eso no es un número, intenta otra vez")
-            impuesto = 19 / 100
-            grado = 10
-            impuestos = 75
-            volumen = 650   
-            tarifa = 342     
-            calular_licor = app_logic.calculate_licores(valor, grado, tarifa, volumen)
-            numero_bolsas = int(input("Ingrese el número de bolsas: "))
-            print (app_logic.Calculate_bolsa(impuestos, numero_bolsas) + app_logic.calculate_iva(calular_licor, impuesto))
-        
-        elif opcion == "8":
-            while True:
-                try:
-                    valor = float(input("Ingrese el precio de la barra de chocolate: "))
-                    break
-                except ValueError:
-                    print("Eso no es un número, intenta otra vez")
-            impuesto = 19 / 100
-            impuestos = 75
-            numero_bolsas = int(input("Ingrese el número de bolsas: "))
-            print (app_logic.Calculate_bolsa(impuestos, numero_bolsas) + app_logic.calculate_iva(valor, impuesto))
 
-        elif opcion == "0":
+def procesar_compra(opcion: str) -> None:
+    """Solicita los datos al usuario y muestra el precio final con impuestos."""
+    producto = PRODUCTOS[opcion]
+
+    valor = leer_float(f"Ingrese el precio de {producto['nombre']}: ")
+    numero_bolsas = leer_int("Ingrese el número de bolsas: ")
+
+    precio_producto = calcular_precio_con_impuesto(valor, producto)
+    precio_bolsas = app_logic.Calculate_bolsa(TARIFA_BOLSA, numero_bolsas)
+
+    total = precio_producto + precio_bolsas
+    print(f"\nPrecio final (con impuestos y bolsas): ${total:.2f}\n")
+
+
+def mostrar_menu() -> None:
+    """Muestra el menú de productos disponibles."""
+    print("\nMENU — Productos disponibles:\n")
+    for clave, producto in PRODUCTOS.items():
+        print(f"  {clave}. {producto['nombre']}")
+    print("  0. Salir\n")
+
+
+def main() -> None:
+    """Función principal que controla el flujo del programa."""
+    print("Bienvenido a la Calculadora de Impuestos de Venta.\n")
+
+    while True:
+        mostrar_menu()
+        opcion = input("Seleccione una opción: ").strip()
+
+        if opcion == "0":
             print("Gracias por usar el programa. ¡Hasta luego!")
             break
-        
+
+        if opcion in PRODUCTOS:
+            try:
+                procesar_compra(opcion)
+            except Exceptions.ErrorCalculoImpuesto as e:
+                print(f"\nError en el cálculo: {e}\n")
         else:
-            print("\n Opción no válida. Por favor, seleccione una opción del menú. \n")
-    
-except Exceptions.TaxCalculationError as e:
-    print("Ha ocurrido un error durante la ejecución del programa:")
-    print(e)    
+            print(Exceptions.ErrorOpcionInvalida())
+
+
+if __name__ == "__main__":
+    main()

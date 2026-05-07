@@ -89,6 +89,12 @@ py src/view/logica_consola.py
 3. El sistema calculará automáticamente los impuestos y el precio final del producto.
 
 ---
+## Ejecución de pruebas unitarias
+
+Desde la carpeta raíz del proyecto, ejecutar:
+```bash
+python -m unittest discover -v -s Tests -p "*test*.py"
+```
 
 # Construcción
 
