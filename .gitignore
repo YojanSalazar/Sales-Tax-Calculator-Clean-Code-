@@ -1,3 +1,6 @@
 _pycache_
 dist
 build
+SecretConfig.py
+__pycache__/
+*.pyc
