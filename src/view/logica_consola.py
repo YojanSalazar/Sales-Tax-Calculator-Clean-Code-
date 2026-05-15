@@ -3,8 +3,8 @@
 import sys
 sys.path.append("src")
 
-import model.app_logic as app_logic
-from model import Exceptions
+import model.app_logic_nuevo as app_logic
+from model import Exceptions_nuevo as Exceptions
 
 
 TARIFA_BOLSA = 75

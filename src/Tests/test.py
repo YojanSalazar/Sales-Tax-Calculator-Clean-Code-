@@ -3,8 +3,8 @@ import sys
 
 sys.path.append("src")
 
-import model.Exceptions as Exceptions
-import model.app_logic as app_logic
+import model.Exceptions_nuevo as Exceptions
+import model.app_logic_nuevo as app_logic
 
 class TestCalculatorTax(unittest.TestCase):
     # Casos normales.
@@ -93,7 +93,7 @@ class TestCalculatorTax(unittest.TestCase):
         valor = 14000
         impuesto = 10/100
 
-        calcular_licor = app_logic.calculte_impuesto_nacional_consumo(valor, impuesto)
+        calcular_licor = app_logic.calcular_impuesto_nacional_consumo(valor, impuesto)
 
         valor_esperado = 15400
 
@@ -140,7 +140,7 @@ class TestCalculatorTax(unittest.TestCase):
         with self.assertRaises(Exceptions.ErrorValorNegativoOCero):
             app_logic.calcular_iva(valor, impuesto)
         with self.assertRaises(Exceptions.ErrorValorNegativoOCero):
-            app_logic.calculte_impuesto_nacional_consumo(valor, impuesto=0)
+            app_logic.calcular_impuesto_nacional_consumo(valor, impuesto=0)
         
     
     def test_error_bolsa(self):
@@ -148,7 +148,7 @@ class TestCalculatorTax(unittest.TestCase):
         impuesto = 75
         cantidad_bolsas = -5
         with self.assertRaises(Exceptions.ErrorParametrosBolsas):
-            app_logic.calcular_bolsa(impuesto=impuesto, numero_bolsas=cantidad_bolsas)
+            app_logic.calcular_bolsa(tarifa=impuesto, numero_bolsas=cantidad_bolsas)
 
     def test_error_IVA(self):
     # Caso de IVA mayor al permitido, se espera que el valor calculado sea igual al mensaje de error.

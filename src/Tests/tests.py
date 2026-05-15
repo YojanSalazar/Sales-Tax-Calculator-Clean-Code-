@@ -1,38 +1,49 @@
 """
 Tests de integración para ControladorProductos.
 
-Requisitos:
-    - PostgreSQL corriendo con los datos de SecretConfig.py
-    - Tabla creada con sql/crear-productos.sql  (el fixture la crea automáticamente)
-
-Ejecución desde la raíz del proyecto:
-    python -m unittest discover -v -s test -p "*test*.py"
+Usa PostgreSQL real — requiere servidor PostgreSQL activo
+y configuración válida en SecretConfig.py.
 """
 
 import sys
+import os
 import unittest
 
-sys.path.append("src")  # Asegura que el módulo src esté en el path para importar
+SRC_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(SRC_DIR)
 
 from model.Producto import Producto
 from model.Exceptions_nuevo import ErrorProductoNoEncontrado, ErrorProductoYaExiste
+from controller.BaseDatos import BaseDatosSQLite
 import controller.ControladorProductos as ControladorProductos
+import SecretConfig as config
 
 
 class TestControladorProductos(unittest.TestCase):
-    """Pruebas CRUD completas sobre la tabla productos."""
+    """Pruebas CRUD completas sobre la tabla productos (SQLite para pruebas)."""
 
     # ── Test Fixtures ────────────────────────────────────────────────────────
 
     @classmethod
     def setUpClass(cls):
-        """Se ejecuta UNA VEZ antes de todas las pruebas: crea la tabla."""
-        print("\n[setUpClass] Creando tabla si no existe...")
-        ControladorProductos.crear_tabla()
+        """Se ejecuta UNA VEZ antes de todas las pruebas: configura la BD."""
+        print("\n[setUpClass] Configurando BD SQLite en memoria para tests...")
+        bd = BaseDatosSQLite(":memory:")
+        ControladorProductos.configurar_bd(bd)
+        # SQLite queries
+        bd.ejecutar('''
+            CREATE TABLE IF NOT EXISTS productos (
+                nombre              VARCHAR(100)   PRIMARY KEY,
+                tipo_impuesto       VARCHAR(10)    NOT NULL,
+                porcentaje_impuesto NUMERIC(5,4)   NOT NULL DEFAULT 0,
+                grado_alcohol       NUMERIC(5,2)   NOT NULL DEFAULT 0,
+                volumen_ml          INTEGER        NOT NULL DEFAULT 0
+            );
+        ''')
 
     def setUp(self):
         """Se ejecuta ANTES de cada prueba: limpia la tabla."""
-        print("\n[setUp] Borrando filas...")
+        print("\n[setUp] Limpiando datos para nuevo test...")
         ControladorProductos.borrar_filas()
 
     def tearDown(self):

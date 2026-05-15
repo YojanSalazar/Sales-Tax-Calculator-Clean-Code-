@@ -6,7 +6,10 @@ además de calcular el precio final con impuestos.
 """
 
 import sys
-sys.path.append("src")
+import os
+
+SRC_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(SRC_DIR)
 
 from model.Producto import Producto
 from model.app_logic_nuevo import calcular_precio_final
@@ -17,6 +20,7 @@ from model.Exceptions_nuevo import (
     ErrorOpcionInvalida,
 )
 import controller.ControladorProductos as ControladorProductos
+from controller.BaseDatos import BaseDatosSQLite
 
 
 # ── Helpers de entrada ───────────────────────────────────────────────────────
@@ -181,7 +185,18 @@ def mostrar_menu():
 
 
 def main():
-    ControladorProductos.crear_tabla()
+    db = BaseDatosSQLite("productos.db")
+    ControladorProductos.configurar_bd(db)
+    # Create SQLite table instead of relying on external SQL script
+    db.ejecutar('''
+        CREATE TABLE IF NOT EXISTS productos (
+            nombre              VARCHAR(100)   PRIMARY KEY,
+            tipo_impuesto       VARCHAR(10)    NOT NULL,
+            porcentaje_impuesto NUMERIC(5,4)   NOT NULL DEFAULT 0,
+            grado_alcohol       NUMERIC(5,2)   NOT NULL DEFAULT 0,
+            volumen_ml          INTEGER        NOT NULL DEFAULT 0
+        );
+    ''')
     print("Bienvenido a la Calculadora de Impuestos de Venta.")
 
     while True:

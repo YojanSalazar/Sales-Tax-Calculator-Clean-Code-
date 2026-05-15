@@ -1,33 +1,47 @@
 """
-Capa de Acceso a Datos (Controller) — ORM manual con psycopg2.
+Capa de Acceso a Datos (Controller) — ORM manual con inyección de dependencias.
 
-Gestiona las operaciones CRUD de la entidad Producto
-contra una base de datos PostgreSQL.
+Gestiona las operaciones CRUD de la entidad Producto.
+Usa PostgreSQL real mediante BaseDatosPostgreSQL.
 """
 
 import sys
 sys.path.append("src")
-import SecretConfig as SecretConfig # Archivo con credenciales de DB (no subir a GitHub)
-import psycopg2
+
+from controller.BaseDatos import BaseDatos, BaseDatosPostgreSQL
 from model.Producto import Producto
 from model.Exceptions_nuevo import ErrorProductoNoEncontrado, ErrorProductoYaExiste
 
 
-# ── Conexión ────────────────────────────────────────────────────────────────
+# ── Variable global para la BD (inyectable) ──────────────────────────────────
 
-def obtener_cursor():
-    """
-    Abre una conexión a PostgreSQL y retorna el cursor asociado.
-    Las credenciales se leen desde SecretConfig.py.
-    """
-    conexion = psycopg2.connect(
-        database=SecretConfig.PGDATABASE,
-        user=SecretConfig.PGUSER,
-        password=SecretConfig.PGPASSWORD,
-        host=SecretConfig.PGHOST,
-        port=SecretConfig.PGPORT,
-    )
-    return conexion.cursor()
+_bd = None
+
+
+def configurar_bd(base_datos: BaseDatos) -> None:
+    """Inyecta la implementación de BD (real o mock)."""
+    global _bd
+    _bd = base_datos
+
+
+def obtener_bd() -> BaseDatos:
+    """Retorna la BD inyectada, o crea una con SecretConfig por defecto."""
+    global _bd
+    if _bd is None:
+        import SecretConfig as config
+        _bd = BaseDatosPostgreSQL({
+            "database": config.PGDATABASE,
+            "user":     config.PGUSER,
+            "password": config.PGPASSWORD,
+            "host":     config.PGHOST,
+            "port":     config.PGPORT,
+        })
+    return _bd
+
+
+def usar_bd_real(config_dict: dict) -> None:
+    """Configura para usar PostgreSQL real."""
+    configurar_bd(BaseDatosPostgreSQL(config_dict))
 
 
 # ── DDL ─────────────────────────────────────────────────────────────────────
@@ -37,22 +51,27 @@ def crear_tabla():
     Crea la tabla 'productos' si no existe.
     Lee el script DDL desde sql/crear-productos.sql.
     """
-    with open("sql/crear-productos.sql", "r", encoding="utf-8") as archivo:
-        sql = archivo.read()
-
-    cursor = obtener_cursor()
     try:
-        cursor.execute(sql)
-        cursor.connection.commit()
-    except Exception:
-        cursor.connection.rollback()
+        with open("sql/crear-productos.sql", "r", encoding="utf-8") as archivo:
+            sql = archivo.read()
+        obtener_bd().ejecutar(sql)
+    except FileNotFoundError:
+        # Si no existe el archivo SQL, crear tabla manualmente
+        sql = """
+        CREATE TABLE IF NOT EXISTS productos (
+            nombre              VARCHAR(100)   PRIMARY KEY,
+            tipo_impuesto       VARCHAR(10)    NOT NULL,
+            porcentaje_impuesto NUMERIC(5,4)   NOT NULL DEFAULT 0,
+            grado_alcohol       NUMERIC(5,2)   NOT NULL DEFAULT 0,
+            volumen_ml          INTEGER        NOT NULL DEFAULT 0
+        );
+        """
+        obtener_bd().ejecutar(sql)
 
 
 def eliminar_tabla():
     """Elimina (DROP) la tabla productos por completo."""
-    cursor = obtener_cursor()
-    cursor.execute("DROP TABLE IF EXISTS productos;")
-    cursor.connection.commit()
+    obtener_bd().ejecutar("DROP TABLE IF EXISTS productos;")
 
 
 def borrar_filas():
@@ -61,9 +80,7 @@ def borrar_filas():
 
     ⚠ ATENCIÓN: No usar en producción.
     """
-    cursor = obtener_cursor()
-    cursor.execute("DELETE FROM productos;")
-    cursor.connection.commit()
+    obtener_bd().ejecutar("DELETE FROM productos;")
 
 
 # ── CREATE ───────────────────────────────────────────────────────────────────
@@ -75,9 +92,8 @@ def insertar(producto: Producto):
     Lanza:
         ErrorProductoYaExiste si ya existe un producto con ese nombre.
     """
-    cursor = obtener_cursor()
     try:
-        cursor.execute(
+        obtener_bd().ejecutar(
             """
             INSERT INTO productos
                 (nombre, tipo_impuesto, porcentaje_impuesto, grado_alcohol, volumen_ml)
@@ -91,12 +107,9 @@ def insertar(producto: Producto):
                 producto.volumen_ml,
             ),
         )
-        cursor.connection.commit()
-    except psycopg2.errors.UniqueViolation:
-        cursor.connection.rollback()
-        raise ErrorProductoYaExiste(producto.nombre)
     except Exception as e:
-        cursor.connection.rollback()
+        if "ya existe" in str(e).lower() or "unique" in str(e).lower() or "duplicate" in str(e).lower():
+            raise ErrorProductoYaExiste(producto.nombre)
         raise Exception(f"No fue posible insertar el producto '{producto.nombre}': {e}")
 
 
@@ -109,8 +122,7 @@ def buscar_por_nombre(nombre: str) -> Producto:
     Lanza:
         ErrorProductoNoEncontrado si no existe.
     """
-    cursor = obtener_cursor()
-    cursor.execute(
+    fila = obtener_bd().consultar_uno(
         """
         SELECT nombre, tipo_impuesto, porcentaje_impuesto, grado_alcohol, volumen_ml
         FROM productos
@@ -118,7 +130,6 @@ def buscar_por_nombre(nombre: str) -> Producto:
         """,
         (nombre,),
     )
-    fila = cursor.fetchone()
 
     if fila is None:
         raise ErrorProductoNoEncontrado(nombre)
@@ -134,15 +145,13 @@ def buscar_por_nombre(nombre: str) -> Producto:
 
 def buscar_todos() -> list:
     """Retorna una lista con todos los Producto registrados."""
-    cursor = obtener_cursor()
-    cursor.execute(
+    filas = obtener_bd().consultar_todos(
         """
         SELECT nombre, tipo_impuesto, porcentaje_impuesto, grado_alcohol, volumen_ml
         FROM productos
         ORDER BY nombre;
         """
     )
-    filas = cursor.fetchall()
 
     return [
         Producto(
@@ -166,8 +175,7 @@ def actualizar(producto: Producto):
     Lanza:
         ErrorProductoNoEncontrado si el nombre no existe.
     """
-    cursor = obtener_cursor()
-    cursor.execute(
+    obtener_bd().ejecutar(
         """
         UPDATE productos
         SET
@@ -185,11 +193,8 @@ def actualizar(producto: Producto):
             producto.nombre,
         ),
     )
-    if cursor.rowcount == 0:
-        cursor.connection.rollback()
+    if obtener_bd().obtener_filas_afectadas() == 0:
         raise ErrorProductoNoEncontrado(producto.nombre)
-
-    cursor.connection.commit()
 
 
 # ── DELETE ───────────────────────────────────────────────────────────────────
@@ -201,13 +206,9 @@ def borrar(nombre: str):
     Lanza:
         ErrorProductoNoEncontrado si el nombre no existe.
     """
-    cursor = obtener_cursor()
-    cursor.execute(
+    obtener_bd().ejecutar(
         "DELETE FROM productos WHERE nombre = %s;",
         (nombre,),
     )
-    if cursor.rowcount == 0:
-        cursor.connection.rollback()
+    if obtener_bd().obtener_filas_afectadas() == 0:
         raise ErrorProductoNoEncontrado(nombre)
-
-    cursor.connection.commit()
